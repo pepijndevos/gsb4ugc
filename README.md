@@ -36,7 +36,7 @@ The URL lookup and the local database update shares common code:
     $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // create the pieces.  Subclass, over-ride for your environment
-    $storage = new GSB_StoreDB($dbh);
+    $storage = new GSB_Storage($dbh);
     $network = new GSB_Request($api);
     $logger  = new GSB_Logger(5);
 
