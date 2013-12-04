@@ -99,20 +99,14 @@ class GSB_Request {
             }
         }
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $data = file_get_contents($url, false);
+        $info = $http_response_header;
 
-        $data = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
-
-        if ($info['http_code'] == 400) {
+        if (preg_match('/400/', $info[0])) {
             throw new GSB_Exception("Invalid request for $url");
         }
 
-        if ($followBackoff && $info['http_code'] > 299) {
+        if ($followBackoff && preg_match('/[345][0-9][0-9]/', $info[0])) {
             //$this->backoff($info, $followBackoff);
         }
 
@@ -150,17 +144,22 @@ class GSB_Request {
                 return $result;
             }
         }
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-        $data = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
 
-        $httpcode = (int)$info['http_code'];
+	$context =
+		array("http"=>
+			array(
+				"method" => "post",
+				"content" => $postdata
+			)
+		);
+	$context = stream_context_create($context);
+
+        $data = file_get_contents($url, false, $context);
+        $info = $http_response_header;
+	$numbers = array();
+	preg_match('/[0-9][0-9][0-9]/', $info[0], $numbers);
+        $httpcode = (int)$numbers[0];
+
         switch ($httpcode) {
         case 204:
         case 200:
