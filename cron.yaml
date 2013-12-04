@@ -1,0 +1,4 @@
+cron:
+- description: update GSB database
+  url: /update
+  schedule: every 5 minutes

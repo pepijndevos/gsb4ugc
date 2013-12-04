@@ -19,10 +19,10 @@ require_once 'GSB_Storage.php';
 require_once 'GSB_Exception.php';
 require_once 'GSB_Logger.php';
 
-$api = 'YOUR-API-KEY-HERE';
+$api = '';
 $gsblists = array('goog-malware-shavar', 'googpub-phish-shavar');
 
-$dbh = new PDO('mysql:host=127.0.0.1;dbname=gsb', 'root');
+$dbh = new PDO('', 'root');
 $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $storage = new GSB_Storage($dbh);
